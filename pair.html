@@ -32,7 +32,7 @@
 
     <div class="tabs">
       <div class="tab active" data-tab="journal" onclick="switchPairTab('journal')">Jurnal</div>
-      <div class="tab" data-tab="fundamental" onclick="switchPairTab('fundamental')">Analiz\u0103 fundamental\u0103</div>
+      <div class="tab" data-tab="fundamental" onclick="switchPairTab('fundamental')">Analiză fundamentală</div>
       <div class="tab" data-tab="characteristics" onclick="switchPairTab('characteristics')">Caracteristici</div>
       <div class="tab" data-tab="notes" onclick="switchPairTab('notes')">Notite</div>
     </div>
@@ -43,37 +43,37 @@
 
     <div class="card" id="tab-fundamental" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h3 class="display" style="font-size:15px; margin:0;">Analiz\u0103 fundamental\u0103 (notite manuale)</h3>
-        <button class="btn secondary" id="fundamental-edit-btn" onclick="toggleFieldEdit('fundamental_analysis')">Editeaz\u0103</button>
+        <h3 class="display" style="font-size:15px; margin:0;">Analiză fundamentală (notite manuale)</h3>
+        <button class="btn secondary" id="fundamental-edit-btn" onclick="toggleFieldEdit('fundamental_analysis')">Editează</button>
       </div>
       <div id="fundamental-view" class="mono" style="white-space:pre-wrap; color:var(--text); font-family:var(--font-body); line-height:1.6;"></div>
       <textarea id="fundamental-edit" style="display:none; min-height:220px;"></textarea>
       <div id="fundamental-save-row" style="display:none; margin-top:12px; text-align:right;">
-        <button class="btn" onclick="savePairField('fundamental_analysis')">Salveaz\u0103</button>
+        <button class="btn" onclick="savePairField('fundamental_analysis')">Salvează</button>
       </div>
     </div>
 
     <div class="card" id="tab-characteristics" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <h3 class="display" style="font-size:15px; margin:0;">Caracteristici pereche</h3>
-        <button class="btn secondary" onclick="toggleFieldEdit('characteristics')">Editeaz\u0103</button>
+        <button class="btn secondary" onclick="toggleFieldEdit('characteristics')">Editează</button>
       </div>
       <div id="characteristics-view" style="white-space:pre-wrap; line-height:1.6;"></div>
       <textarea id="characteristics-edit" style="display:none; min-height:220px;"></textarea>
       <div id="characteristics-save-row" style="display:none; margin-top:12px; text-align:right;">
-        <button class="btn" onclick="savePairField('characteristics')">Salveaz\u0103</button>
+        <button class="btn" onclick="savePairField('characteristics')">Salvează</button>
       </div>
     </div>
 
     <div class="card" id="tab-notes" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <h3 class="display" style="font-size:15px; margin:0;">Notite libere</h3>
-        <button class="btn secondary" onclick="toggleFieldEdit('notes')">Editeaz\u0103</button>
+        <button class="btn secondary" onclick="toggleFieldEdit('notes')">Editează</button>
       </div>
       <div id="notes-view" style="white-space:pre-wrap; line-height:1.6;"></div>
       <textarea id="notes-edit" style="display:none; min-height:220px;"></textarea>
       <div id="notes-save-row" style="display:none; margin-top:12px; text-align:right;">
-        <button class="btn" onclick="savePairField('notes')">Salveaz\u0103</button>
+        <button class="btn" onclick="savePairField('notes')">Salvează</button>
       </div>
     </div>
   </main>
