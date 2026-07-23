@@ -42,15 +42,11 @@
     </div>
 
     <div class="card" id="tab-fundamental" style="display:none;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h3 class="display" style="font-size:15px; margin:0;">Analiză fundamentală (notite manuale)</h3>
-        <button class="btn secondary" id="fundamental-edit-btn" onclick="toggleFieldEdit('fundamental_analysis')">Editează</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 class="display" style="font-size:15px; margin:0;">Analiză fundamentală — jurnal</h3>
+        <button class="btn" onclick="openFundamentalEntryModal()">+ Analiză nouă</button>
       </div>
-      <div id="fundamental-view" class="mono" style="white-space:pre-wrap; color:var(--text); font-family:var(--font-body); line-height:1.6;"></div>
-      <textarea id="fundamental-edit" style="display:none; min-height:220px;"></textarea>
-      <div id="fundamental-save-row" style="display:none; margin-top:12px; text-align:right;">
-        <button class="btn" onclick="savePairField('fundamental_analysis')">Salvează</button>
-      </div>
+      <div id="fundamental-entries-list"></div>
     </div>
 
     <div class="card" id="tab-characteristics" style="display:none;">
