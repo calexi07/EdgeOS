@@ -141,6 +141,7 @@ async function renderSidebar(active) {
     <a href="index.html" class="brand"><span class="brand-mark"></span>Pair Journal</a>
     <div class="nav-section-label">Overview</div>
     <a href="index.html" class="nav-link ${active === 'dashboard' ? 'active' : ''}">Dashboard global</a>
+    <a href="journal.html" class="nav-link ${active === 'journal' ? 'active' : ''}">Jurnal global</a>
     <a href="accounts.html" class="nav-link ${active === 'accounts' ? 'active' : ''}">Conturi</a>
     <div class="nav-section-label">Perechi</div>
     <div id="pairs-watchlist"></div>
