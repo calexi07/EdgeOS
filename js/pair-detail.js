@@ -46,7 +46,7 @@ function renderPairTradesTable() {
     return;
   }
   const rows = __pairTrades.map(t => `
-    <tr onclick='openTradeModal({trade: ${JSON.stringify(t).replace(/'/g, "&#39;")}, lockPairId: __pair.id, onSaved: loadPairDetail})' style="cursor:pointer;">
+    <tr onclick='openTradeModal({trade: ${JSON.stringify(t).replace(/'/g, "&#39;")}, onSaved: loadPairDetail})' style="cursor:pointer;">
       <td>${t.accounts?.name || '—'}</td>
       <td>${t.direction}</td>
       <td>${fmtDate(t.entry_at)}</td>
