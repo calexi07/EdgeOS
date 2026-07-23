@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pair Journal — Jurnal global</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="shell">
+  <nav class="sidebar" id="sidebar-mount"></nav>
+  <main class="content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div>
+        <h1 class="display" style="font-size:26px; margin:0;">Jurnal global</h1>
+        <p style="color:var(--text-muted); margin:4px 0 0; font-size:13px;">Toate trade-urile, pe toate conturile. De aici se adaugă trade-uri noi — apar apoi automat pe paginile de cont și de pereche.</p>
+      </div>
+      <button class="btn" onclick="openTradeModal({onSaved: loadJournal})">+ Trade</button>
+    </div>
+
+    <div class="card" style="margin:20px 0;">
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <div style="min-width:160px;">
+          <label>Cont</label>
+          <select id="filter-account"><option value="">Toate</option></select>
+        </div>
+        <div style="min-width:160px;">
+          <label>Pereche</label>
+          <select id="filter-pair"><option value="">Toate</option></select>
+        </div>
+        <div style="min-width:140px;">
+          <label>Rezultat</label>
+          <select id="filter-result">
+            <option value="">Toate</option>
+            <option value="win">Win</option>
+            <option value="loss">Loss</option>
+            <option value="breakeven">Breakeven</option>
+            <option value="open">Deschis</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="journal-table"></div>
+    </div>
+  </main>
+</div>
+
+<div id="modal-root"></div>
+
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/trade-modal.js"></script>
+<script src="js/journal.js"></script>
+<script>
+  renderSidebar('journal');
+  loadJournal();
+</script>
+</body>
+</html>
