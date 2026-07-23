@@ -17,9 +17,10 @@ async function loadPairDetail() {
   document.getElementById('pair-symbol-crumb').textContent = pair.symbol;
   document.getElementById('pair-display-name').textContent = pair.display_name || '';
 
-  document.getElementById('fundamental-view').textContent = pair.fundamental_analysis || 'Nicio analiz\u0103 fundamental\u0103 \u00eenc\u0103. Apas\u0103 "Editeaz\u0103" pentru a ad\u0103uga notitele tale.';
   document.getElementById('characteristics-view').textContent = pair.characteristics || 'Nicio caracteristic\u0103 notat\u0103 \u00eenc\u0103.';
   document.getElementById('notes-view').textContent = pair.notes || 'Nicio notit\u0103 \u00eenc\u0103.';
+
+  await loadFundamentalEntries();
 
   const { data: trades } = await supabaseClient
     .from('trades')
@@ -61,6 +62,97 @@ function renderPairTradesTable() {
       <tbody>${rows}</tbody>
     </table>
   `;
+}
+
+// ---------------------------------------------------------------
+// Fundamental analysis — running log of entries (add/edit/delete, never overwritten)
+// ---------------------------------------------------------------
+let __fundamentalEntries = [];
+
+async function loadFundamentalEntries() {
+  const { data } = await supabaseClient
+    .from('pair_fundamental_entries')
+    .select('*')
+    .eq('pair_id', __pair.id)
+    .order('entry_date', { ascending: false })
+    .order('created_at', { ascending: false });
+  __fundamentalEntries = data || [];
+  renderFundamentalEntries();
+}
+
+function renderFundamentalEntries() {
+  const el = document.getElementById('fundamental-entries-list');
+  if (!__fundamentalEntries.length) {
+    el.innerHTML = `<div class="empty-state"><div class="display">Niciun jurnal de analiz\u0103 \u00eenc\u0103</div>Apas\u0103 "+ Analiz\u0103 nou\u0103" pentru prima intrare pe aceast\u0103 pereche.</div>`;
+    return;
+  }
+  el.innerHTML = __fundamentalEntries.map(e => `
+    <div class="entry-card">
+      <div class="entry-card-head">
+        <span class="entry-date">${fmtDate(e.entry_date)}</span>
+        <span class="entry-actions">
+          <button onclick='openFundamentalEntryModal(${JSON.stringify(e).replace(/'/g, "&#39;")})'>Editeaz\u0103</button>
+          <button onclick="deleteFundamentalEntry('${e.id}')">\u0218terge</button>
+        </span>
+      </div>
+      <div class="entry-content">${escapeHtml(e.content)}</div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function openFundamentalEntryModal(entry) {
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `
+    <div class="modal-backdrop" onclick="if(event.target===this) this.remove()">
+      <div class="modal" style="max-width:560px;">
+        <h3 class="display" style="margin-top:0;">${entry ? 'Editeaz\u0103 analiz\u0103' : 'Analiz\u0103 nou\u0103'}</h3>
+        <form id="fundamental-entry-form">
+          <label>Data</label>
+          <input name="entry_date" type="date" value="${entry ? entry.entry_date : new Date().toISOString().slice(0,10)}" style="margin-bottom:12px;">
+          <label>Con\u021binut</label>
+          <textarea name="content" rows="8" required style="margin-bottom:16px;">${entry ? entry.content : ''}</textarea>
+          <div style="display:flex; gap:8px; justify-content:flex-end;">
+            <button type="button" class="btn secondary" onclick="document.getElementById('modal-root').innerHTML=''">Anuleaz\u0103</button>
+            <button type="submit" class="btn">Salveaz\u0103</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+  document.getElementById('fundamental-entry-form').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const fd = new FormData(ev.target);
+    const payload = {
+      pair_id: __pair.id,
+      entry_date: fd.get('entry_date'),
+      content: fd.get('content'),
+    };
+    let error;
+    if (entry) {
+      payload.updated_at = new Date().toISOString();
+      ({ error } = await supabaseClient.from('pair_fundamental_entries').update(payload).eq('id', entry.id));
+    } else {
+      ({ error } = await supabaseClient.from('pair_fundamental_entries').insert(payload));
+    }
+    if (error) { toast('Eroare: ' + error.message); return; }
+    document.getElementById('modal-root').innerHTML = '';
+    toast('Salvat');
+    loadFundamentalEntries();
+  });
+}
+
+async function deleteFundamentalEntry(id) {
+  if (!confirm('Sigur \u0219tergi aceast\u0103 intrare din jurnalul de analiz\u0103?')) return;
+  const { error } = await supabaseClient.from('pair_fundamental_entries').delete().eq('id', id);
+  if (error) { toast('Eroare: ' + error.message); return; }
+  toast('\u0218ters');
+  loadFundamentalEntries();
 }
 
 function switchPairTab(tab) {
