@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pair Journal — Cont</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+<div class="shell">
+  <nav class="sidebar" id="sidebar-mount"></nav>
+  <main class="content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div>
+        <div style="color:var(--text-muted); font-size:12px; margin-bottom:4px;"><a href="accounts.html" style="color:var(--text-muted);">Conturi</a> / <span id="account-name-crumb"></span></div>
+        <h1 class="display" style="font-size:26px; margin:0;" id="account-name"></h1>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn secondary" onclick="openTxModal('deposit')">+ Deposit</button>
+        <button class="btn secondary" onclick="openTxModal('withdrawal')">+ Withdraw</button>
+        <button class="btn" onclick="openTradeModal()">+ Trade</button>
+      </div>
+    </div>
+
+    <div id="account-stats" class="stat-grid" style="margin: 20px 0;"></div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <h3 class="display" style="font-size:15px; margin:0 0 14px;">Equity curve</h3>
+      <canvas id="equity-chart" height="90"></canvas>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="trades" onclick="switchAccTab('trades')">Trade-uri</div>
+      <div class="tab" data-tab="tx" onclick="switchAccTab('tx')">Deposit / Withdraw</div>
+    </div>
+
+    <div class="card" id="tab-trades">
+      <div id="trades-table"></div>
+    </div>
+    <div class="card" id="tab-tx" style="display:none;">
+      <div id="tx-table"></div>
+    </div>
+  </main>
+</div>
+
+<div id="modal-root"></div>
+
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/trade-modal.js"></script>
+<script src="js/account-detail.js"></script>
+<script>
+  renderSidebar('accounts');
+  loadAccountDetail();
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pair Journal — Pereche</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+<div class="shell">
+  <nav class="sidebar" id="sidebar-mount"></nav>
+  <main class="content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div>
+        <div style="color:var(--text-muted); font-size:12px; margin-bottom:4px;">Perechi / <span id="pair-symbol-crumb"></span></div>
+        <h1 class="display mono" style="font-size:28px; margin:0;" id="pair-symbol"></h1>
+        <div id="pair-display-name" style="color:var(--text-muted); font-size:13px; margin-top:2px;"></div>
+      </div>
+      <button class="btn" onclick="openTradeModal({lockPairId: __pair.id, onSaved: loadPairDetail})">+ Trade</button>
+    </div>
+
+    <div id="pair-stats" class="stat-grid" style="margin: 20px 0;"></div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <h3 class="display" style="font-size:15px; margin:0 0 14px;">Equity curve — pereche</h3>
+      <canvas id="equity-chart" height="90"></canvas>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="journal" onclick="switchPairTab('journal')">Jurnal</div>
+      <div class="tab" data-tab="fundamental" onclick="switchPairTab('fundamental')">Analiz\u0103 fundamental\u0103</div>
+      <div class="tab" data-tab="characteristics" onclick="switchPairTab('characteristics')">Caracteristici</div>
+      <div class="tab" data-tab="notes" onclick="switchPairTab('notes')">Notite</div>
+    </div>
+
+    <div class="card" id="tab-journal">
+      <div id="pair-trades-table"></div>
+    </div>
+
+    <div class="card" id="tab-fundamental" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 class="display" style="font-size:15px; margin:0;">Analiz\u0103 fundamental\u0103 (notite manuale)</h3>
+        <button class="btn secondary" id="fundamental-edit-btn" onclick="toggleFieldEdit('fundamental_analysis')">Editeaz\u0103</button>
+      </div>
+      <div id="fundamental-view" class="mono" style="white-space:pre-wrap; color:var(--text); font-family:var(--font-body); line-height:1.6;"></div>
+      <textarea id="fundamental-edit" style="display:none; min-height:220px;"></textarea>
+      <div id="fundamental-save-row" style="display:none; margin-top:12px; text-align:right;">
+        <button class="btn" onclick="savePairField('fundamental_analysis')">Salveaz\u0103</button>
+      </div>
+    </div>
+
+    <div class="card" id="tab-characteristics" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 class="display" style="font-size:15px; margin:0;">Caracteristici pereche</h3>
+        <button class="btn secondary" onclick="toggleFieldEdit('characteristics')">Editeaz\u0103</button>
+      </div>
+      <div id="characteristics-view" style="white-space:pre-wrap; line-height:1.6;"></div>
+      <textarea id="characteristics-edit" style="display:none; min-height:220px;"></textarea>
+      <div id="characteristics-save-row" style="display:none; margin-top:12px; text-align:right;">
+        <button class="btn" onclick="savePairField('characteristics')">Salveaz\u0103</button>
+      </div>
+    </div>
+
+    <div class="card" id="tab-notes" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 class="display" style="font-size:15px; margin:0;">Notite libere</h3>
+        <button class="btn secondary" onclick="toggleFieldEdit('notes')">Editeaz\u0103</button>
+      </div>
+      <div id="notes-view" style="white-space:pre-wrap; line-height:1.6;"></div>
+      <textarea id="notes-edit" style="display:none; min-height:220px;"></textarea>
+      <div id="notes-save-row" style="display:none; margin-top:12px; text-align:right;">
+        <button class="btn" onclick="savePairField('notes')">Salveaz\u0103</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="modal-root"></div>
+
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/trade-modal.js"></script>
+<script src="js/pair-detail.js"></script>
+<script>
+  renderSidebar('pairs');
+  loadPairDetail();
+</script>
+</body>
+</html>

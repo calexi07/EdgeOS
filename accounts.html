@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pair Journal — Conturi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="shell">
+  <nav class="sidebar" id="sidebar-mount"></nav>
+  <main class="content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+      <div>
+        <h1 class="display" style="font-size:26px; margin:0;">Conturi</h1>
+        <p style="color:var(--text-muted); margin:4px 0 0; font-size:13px;">Toate conturile tale de trading</p>
+      </div>
+      <button class="btn" onclick="openAddAccountModal()">+ Cont nou</button>
+    </div>
+
+    <div class="card">
+      <div id="accounts-table"></div>
+    </div>
+  </main>
+</div>
+
+<div id="modal-root"></div>
+
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/accounts.js"></script>
+<script>
+  renderSidebar('accounts');
+  loadAccounts();
+</script>
+</body>
+</html>
