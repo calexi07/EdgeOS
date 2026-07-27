@@ -135,7 +135,7 @@ async function renderSidebar(active) {
   const mount = document.getElementById('sidebar-mount');
   if (!mount) return;
 
-  const { data: pairs } = await supabaseClient.from('pairs').select('id, symbol, category').order('symbol');
+  const { data: pairs } = await supabaseClient.from('pairs').select('id, symbol, category, sidebar_group').order('symbol');
 
   mount.innerHTML = `
     <a href="index.html" class="brand"><span class="brand-mark"></span>Pair Journal</a>
@@ -152,7 +152,7 @@ async function renderSidebar(active) {
   if (!pairs || !pairs.length) {
     wl.innerHTML = `<div style="color:var(--text-muted); font-size:12px; padding: 6px 10px;">Nicio pereche \u00eenc\u0103.</div>`;
   } else {
-    const currencyOrder = ['USD', 'GBP', 'EUR', 'JPY', 'AUD', 'NZD', 'CHF', 'CAD'];
+    const groupOrder = ['USD', 'GBP', 'EUR', 'JPY', 'AUD', 'NZD', 'CHF', 'CAD'];
     const pairRow = (p) => `
       <a href="pair.html?symbol=${encodeURIComponent(p.symbol)}" class="pair-row">
         <span class="symbol">${p.symbol}</span>
@@ -163,8 +163,8 @@ async function renderSidebar(active) {
     let html = '';
     const usedIds = new Set();
 
-    currencyOrder.forEach(code => {
-      const matches = pairs.filter(p => p.symbol.toUpperCase().includes(code));
+    groupOrder.forEach(code => {
+      const matches = pairs.filter(p => (p.sidebar_group || 'Altele') === code);
       if (!matches.length) return;
       matches.forEach(p => usedIds.add(p.id));
       html += `<div class="nav-section-label" style="margin-top:14px;">${code}</div>`;
