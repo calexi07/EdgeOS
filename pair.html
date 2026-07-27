@@ -21,7 +21,21 @@
         <div style="color:var(--text-muted); font-size:12px; margin-bottom:4px;">Perechi / <span id="pair-symbol-crumb"></span></div>
         <h1 class="display mono" style="font-size:28px; margin:0;" id="pair-symbol"></h1>
         <div id="pair-display-name" style="color:var(--text-muted); font-size:13px; margin-top:2px;"></div>
-        <p style="color:var(--text-muted); margin:4px 0 0; font-size:12px;">Trade-urile se adaugă din <a href="journal.html" style="color:var(--gold);">Jurnalul global</a> — aici doar le vezi și le editezi.</p>
+        <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+          <label style="margin:0; font-size:12px;">Grup \u00een meniu:</label>
+          <select id="pair-sidebar-group" style="width:auto; padding:4px 8px;" onchange="updateSidebarGroup(this.value)">
+            <option value="USD">USD</option>
+            <option value="GBP">GBP</option>
+            <option value="EUR">EUR</option>
+            <option value="JPY">JPY</option>
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="CHF">CHF</option>
+            <option value="CAD">CAD</option>
+            <option value="Altele">Altele</option>
+          </select>
+        </div>
+        <p style="color:var(--text-muted); margin:8px 0 0; font-size:12px;">Trade-urile se adaugă din <a href="journal.html" style="color:var(--gold);">Jurnalul global</a> — aici doar le vezi și le editezi.</p>
       </div>
     </div>
 
