@@ -1,3 +1,9 @@
+// ============================================================
+// Shared setup logic — used by setups.html (all setups, with filters)
+// and pair.html (setups for one pair only, inside its own tab).
+// window.__afterSetupChange is called after any create/verdict/delete so
+// whichever page is currently active can refresh its own view.
+// ============================================================
 let __setups = [];
 let __setupPairs = [];
 
@@ -17,6 +23,7 @@ async function loadSetups() {
   document.getElementById('filter-setup-pair').onchange = renderSetups;
   document.getElementById('filter-setup-verdict').onchange = renderSetups;
 
+  window.__afterSetupChange = loadSetups;
   renderSetups();
 }
 
@@ -53,16 +60,17 @@ function escapeHtmlSetup(s) {
   return d.innerHTML;
 }
 
-function renderSetupCard(s) {
+function renderSetupCard(s, opts = {}) {
   const verdictBadgeClass = s.verdict === 'correct' ? 'win' : s.verdict === 'wrong' ? 'loss' : 'open';
   const verdictLabel = s.verdict === 'correct' ? 'Corect' : s.verdict === 'wrong' ? 'Greșit' : 'În așteptare';
+  const showPairName = !opts.hidePairName;
 
   return `
     <div class="setup-card">
       <div class="setup-card-head">
         <div>
-          <span class="mono" style="font-weight:700; font-size:16px;">${s.pairs?.symbol || '—'}</span>
-          <span style="color:var(--text-muted); font-size:12px; margin-left:10px;">${fmtDate(s.created_at)}</span>
+          ${showPairName ? `<span class="mono" style="font-weight:700; font-size:16px;">${s.pairs?.symbol || '—'}</span>` : ''}
+          <span style="color:var(--text-muted); font-size:12px; ${showPairName ? 'margin-left:10px;' : ''}">${fmtDate(s.created_at)}</span>
           <span class="badge ${verdictBadgeClass}" style="margin-left:10px;">${verdictLabel}</span>
         </div>
         <div class="setup-actions">
@@ -96,7 +104,7 @@ async function setVerdict(id, verdict) {
   const { error } = await supabaseClient.from('pair_setups').update({ verdict }).eq('id', id);
   if (error) { toast('Eroare: ' + error.message); return; }
   toast('Verdict salvat');
-  loadSetups();
+  if (window.__afterSetupChange) window.__afterSetupChange();
 }
 
 async function deleteSetup(id) {
@@ -104,20 +112,38 @@ async function deleteSetup(id) {
   const { error } = await supabaseClient.from('pair_setups').delete().eq('id', id);
   if (error) { toast('Eroare: ' + error.message); return; }
   toast('Setup șters');
-  loadSetups();
+  if (window.__afterSetupChange) window.__afterSetupChange();
 }
 
-function openNewSetupModal() {
+// opts: { lockPairId } — when set, the pair select is replaced with a fixed,
+// read-only display and every new setup is saved against that pair.
+async function openNewSetupModal(opts = {}) {
+  const lockPairId = opts.lockPairId;
+
+  let pairOptions = '';
+  let lockedSymbol = '';
+  if (lockPairId) {
+    const found = __setupPairs.find(p => p.id === lockPairId);
+    lockedSymbol = found ? found.symbol : '';
+    if (!lockedSymbol) {
+      const { data } = await supabaseClient.from('pairs').select('symbol').eq('id', lockPairId).single();
+      lockedSymbol = data?.symbol || '—';
+    }
+  } else {
+    const { data: pairs } = await supabaseClient.from('pairs').select('id, symbol').order('symbol');
+    pairOptions = (pairs || []).map(p => `<option value="${p.id}">${p.symbol}</option>`).join('');
+  }
+
   const root = document.getElementById('modal-root');
   root.innerHTML = `
     <div class="modal-backdrop" onclick="if(event.target===this) this.remove()">
       <div class="modal" style="max-width:680px;">
         <h3 class="display" style="margin-top:0;">Setup nou</h3>
         <form id="new-setup-form">
-          <label>Pereche</label>
-          <select name="pair_id" required style="margin-bottom:16px;">
-            ${__setupPairs.map(p => `<option value="${p.id}">${p.symbol}</option>`).join('')}
-          </select>
+          ${lockPairId
+            ? `<label>Pereche</label><input value="${lockedSymbol}" disabled style="margin-bottom:16px;">`
+            : `<label>Pereche</label><select name="pair_id" required style="margin-bottom:16px;">${pairOptions}</select>`
+          }
 
           ${['daily', 'h4', 'h1'].map(tf => `
             <div style="border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:12px;">
@@ -147,7 +173,7 @@ function openNewSetupModal() {
     e.preventDefault();
     const fd = new FormData(e.target);
     const payload = {
-      pair_id: fd.get('pair_id'),
+      pair_id: lockPairId || fd.get('pair_id'),
       daily_notes: fd.get('daily_notes') || null,
       daily_chart_url: fd.get('daily_chart_url') || null,
       h4_notes: fd.get('h4_notes') || null,
@@ -161,6 +187,6 @@ function openNewSetupModal() {
     if (error) { toast('Eroare: ' + error.message); return; }
     document.getElementById('modal-root').innerHTML = '';
     toast('Setup salvat');
-    loadSetups();
+    if (window.__afterSetupChange) window.__afterSetupChange();
   });
 }
