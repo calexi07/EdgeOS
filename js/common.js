@@ -152,11 +152,31 @@ async function renderSidebar(active) {
   if (!pairs || !pairs.length) {
     wl.innerHTML = `<div style="color:var(--text-muted); font-size:12px; padding: 6px 10px;">Nicio pereche \u00eenc\u0103.</div>`;
   } else {
-    wl.innerHTML = pairs.map(p => `
+    const currencyOrder = ['USD', 'GBP', 'EUR', 'JPY', 'AUD', 'NZD', 'CHF', 'CAD'];
+    const pairRow = (p) => `
       <a href="pair.html?symbol=${encodeURIComponent(p.symbol)}" class="pair-row">
         <span class="symbol">${p.symbol}</span>
         <span class="pill">${p.category}</span>
       </a>
-    `).join('');
+    `;
+
+    let html = '';
+    const usedIds = new Set();
+
+    currencyOrder.forEach(code => {
+      const matches = pairs.filter(p => p.symbol.toUpperCase().includes(code));
+      if (!matches.length) return;
+      matches.forEach(p => usedIds.add(p.id));
+      html += `<div class="nav-section-label" style="margin-top:14px;">${code}</div>`;
+      html += matches.map(pairRow).join('');
+    });
+
+    const rest = pairs.filter(p => !usedIds.has(p.id));
+    if (rest.length) {
+      html += `<div class="nav-section-label" style="margin-top:14px;">Altele</div>`;
+      html += rest.map(pairRow).join('');
+    }
+
+    wl.innerHTML = html;
   }
 }
