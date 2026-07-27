@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pair Journal — Setups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="shell">
+  <nav class="sidebar" id="sidebar-mount"></nav>
+  <main class="content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div>
+        <h1 class="display" style="font-size:26px; margin:0;">Setups</h1>
+        <p style="color:var(--text-muted); margin:4px 0 0; font-size:13px;">Analiza ta personală pe perechi — Daily / 4H / 1H + confluențe. Odată salvat, un setup nu se mai editează — doar îl bifezi Corect/Greșit sau îl ștergi.</p>
+      </div>
+      <button class="btn" onclick="openNewSetupModal()">+ Setup nou</button>
+    </div>
+
+    <div class="card" style="margin:20px 0;">
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <div style="min-width:160px;">
+          <label>Pereche</label>
+          <select id="filter-setup-pair"><option value="">Toate</option></select>
+        </div>
+        <div style="min-width:160px;">
+          <label>Verdict</label>
+          <select id="filter-setup-verdict">
+            <option value="">Toate</option>
+            <option value="pending">În așteptare</option>
+            <option value="correct">Corect</option>
+            <option value="wrong">Greșit</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="setups-list"></div>
+  </main>
+</div>
+
+<div id="modal-root"></div>
+
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/setups.js"></script>
+<script>
+  renderSidebar('setups');
+  loadSetups();
+</script>
+</body>
+</html>
