@@ -68,6 +68,7 @@ function renderPairTradesTable() {
 // Fundamental analysis — running log of entries (add/edit/delete, never overwritten)
 // ---------------------------------------------------------------
 let __fundamentalEntries = [];
+let __expandedFundamentalIds = new Set();
 
 async function loadFundamentalEntries() {
   const { data } = await supabaseClient
@@ -80,24 +81,48 @@ async function loadFundamentalEntries() {
   renderFundamentalEntries();
 }
 
+function fundamentalPreviewText(content) {
+  const plain = (content || '')
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/[#>*_`|-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return plain.length > 160 ? plain.slice(0, 160) + '…' : (plain || 'Fără conținut');
+}
+
+function toggleFundamentalEntry(id) {
+  if (__expandedFundamentalIds.has(id)) {
+    __expandedFundamentalIds.delete(id);
+  } else {
+    __expandedFundamentalIds.add(id);
+  }
+  renderFundamentalEntries();
+}
+
 function renderFundamentalEntries() {
   const el = document.getElementById('fundamental-entries-list');
   if (!__fundamentalEntries.length) {
     el.innerHTML = `<div class="empty-state"><div class="display">Niciun jurnal de analiz\u0103 \u00eenc\u0103</div>Apas\u0103 "+ Analiz\u0103 nou\u0103" pentru prima intrare pe aceast\u0103 pereche.</div>`;
     return;
   }
-  el.innerHTML = __fundamentalEntries.map(e => `
+  el.innerHTML = __fundamentalEntries.map(e => {
+    const expanded = __expandedFundamentalIds.has(e.id);
+    return `
     <div class="entry-card">
       <div class="entry-card-head">
         <span class="entry-date">${fmtDate(e.entry_date)}</span>
         <span class="entry-actions">
-          <button onclick='openFundamentalEntryModal(${JSON.stringify(e).replace(/'/g, "&#39;")})'>Editeaz\u0103</button>
-          <button onclick="deleteFundamentalEntry('${e.id}')">\u0218terge</button>
+          <button onclick='event.stopPropagation(); openFundamentalEntryModal(${JSON.stringify(e).replace(/'/g, "&#39;")})'>Editeaz\u0103</button>
+          <button onclick="event.stopPropagation(); deleteFundamentalEntry('${e.id}')">\u0218terge</button>
         </span>
       </div>
-      <div class="entry-content markdown-body">${DOMPurify.sanitize(marked.parse(e.content || ''))}</div>
+      ${expanded
+        ? `<div class="entry-content markdown-body" onclick="toggleFundamentalEntry('${e.id}')" style="cursor:pointer;" title="Click pentru a restr\u00e2nge">${DOMPurify.sanitize(marked.parse(e.content || ''))}</div>`
+        : `<div class="entry-preview" onclick="toggleFundamentalEntry('${e.id}')" title="Click pentru a vedea analiza complet\u0103">${escapeHtml(fundamentalPreviewText(e.content))}</div>`
+      }
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function escapeHtml(s) {
