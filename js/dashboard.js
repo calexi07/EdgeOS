@@ -89,12 +89,24 @@ function openAddPairModal() {
           <label>Nume afi\u0219at</label>
           <input name="display_name" style="margin-bottom:12px;" />
           <label>Categorie</label>
-          <select name="category" style="margin-bottom:16px;">
+          <select name="category" style="margin-bottom:12px;">
             <option value="forex">Forex</option>
             <option value="indices">Indices</option>
             <option value="crypto">Crypto</option>
             <option value="metals">Metals</option>
             <option value="other">Other</option>
+          </select>
+          <label>Grup \u00een meniu (unde apare \u00een sidebar)</label>
+          <select name="sidebar_group" style="margin-bottom:16px;">
+            <option value="USD">USD</option>
+            <option value="GBP">GBP</option>
+            <option value="EUR">EUR</option>
+            <option value="JPY">JPY</option>
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="CHF">CHF</option>
+            <option value="CAD">CAD</option>
+            <option value="Altele">Altele</option>
           </select>
           <div style="display:flex; gap:8px; justify-content:flex-end;">
             <button type="button" class="btn secondary" onclick="document.getElementById('modal-root').innerHTML=''">Anuleaz\u0103</button>
@@ -111,6 +123,7 @@ function openAddPairModal() {
       symbol: fd.get('symbol').toUpperCase().trim(),
       display_name: fd.get('display_name') || null,
       category: fd.get('category'),
+      sidebar_group: fd.get('sidebar_group'),
     });
     if (error) { toast('Eroare: ' + error.message); return; }
     document.getElementById('modal-root').innerHTML = '';
