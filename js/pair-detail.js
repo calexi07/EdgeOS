@@ -17,10 +17,7 @@ async function loadPairDetail() {
   document.getElementById('pair-symbol-crumb').textContent = pair.symbol;
   document.getElementById('pair-display-name').textContent = pair.display_name || '';
 
-  document.getElementById('characteristics-view').innerHTML = pair.characteristics
-    ? DOMPurify.sanitize(marked.parse(pair.characteristics))
-    : 'Nicio caracteristic\u0103 notat\u0103 \u00eenc\u0103.';
-  document.getElementById('characteristics-edit').value = pair.characteristics || '';
+  renderCharacteristics();
   document.getElementById('notes-view').innerHTML = pair.notes
     ? DOMPurify.sanitize(marked.parse(pair.notes))
     : 'Nicio notit\u0103 \u00eenc\u0103.';
@@ -214,13 +211,54 @@ function toggleFieldEdit(field) {
   }
 }
 
-async function saveCharacteristics() {
-  const value = document.getElementById('characteristics-edit').value;
-  const { error } = await supabaseClient.from('pairs').update({ characteristics: value, updated_at: new Date().toISOString() }).eq('id', __pair.id);
+function renderCharacteristics() {
+  const view = document.getElementById('characteristics-view');
+  const actions = document.getElementById('characteristics-actions');
+  if (__pair.characteristics && __pair.characteristics.trim()) {
+    view.innerHTML = DOMPurify.sanitize(marked.parse(__pair.characteristics));
+    actions.innerHTML = `<button class="btn danger" onclick="deleteCharacteristics()">\u0218terge</button>`;
+  } else {
+    view.innerHTML = `<div class="empty-state" style="padding:24px 0;">Nicio caracteristic\u0103 notat\u0103 \u00eenc\u0103.</div>`;
+    actions.innerHTML = `<button class="btn" onclick="openCharacteristicsModal()">+ Adaug\u0103</button>`;
+  }
+}
+
+function openCharacteristicsModal() {
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `
+    <div class="modal-backdrop" onclick="if(event.target===this) this.remove()">
+      <div class="modal" style="max-width:720px;">
+        <h3 class="display" style="margin-top:0;">Caracteristici pereche</h3>
+        <form id="characteristics-form">
+          <label>Con\u021binut (Markdown)</label>
+          <textarea name="characteristics" rows="16" required style="margin-bottom:16px; font-family: var(--font-mono); font-size:12px;"></textarea>
+          <div style="display:flex; gap:8px; justify-content:flex-end;">
+            <button type="button" class="btn secondary" onclick="document.getElementById('modal-root').innerHTML=''">Anuleaz\u0103</button>
+            <button type="submit" class="btn">Salveaz\u0103</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+  document.getElementById('characteristics-form').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const value = new FormData(ev.target).get('characteristics');
+    const { error } = await supabaseClient.from('pairs').update({ characteristics: value, updated_at: new Date().toISOString() }).eq('id', __pair.id);
+    if (error) { toast('Eroare: ' + error.message); return; }
+    __pair.characteristics = value;
+    document.getElementById('modal-root').innerHTML = '';
+    toast('Salvat');
+    renderCharacteristics();
+  });
+}
+
+async function deleteCharacteristics() {
+  if (!confirm('Sigur \u0219tergi caracteristicile acestei perechi?')) return;
+  const { error } = await supabaseClient.from('pairs').update({ characteristics: null, updated_at: new Date().toISOString() }).eq('id', __pair.id);
   if (error) { toast('Eroare: ' + error.message); return; }
-  __pair.characteristics = value;
-  document.getElementById('characteristics-view').innerHTML = value ? DOMPurify.sanitize(marked.parse(value)) : 'Nicio caracteristic\u0103 notat\u0103 \u00eenc\u0103.';
-  toast('Salvat');
+  __pair.characteristics = null;
+  toast('\u0218ters');
+  renderCharacteristics();
 }
 
 function fieldKeyToViewId(field) {
