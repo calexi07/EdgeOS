@@ -16,6 +16,7 @@ async function loadPairDetail() {
   document.getElementById('pair-symbol').textContent = pair.symbol;
   document.getElementById('pair-symbol-crumb').textContent = pair.symbol;
   document.getElementById('pair-display-name').textContent = pair.display_name || '';
+  document.getElementById('pair-sidebar-group').value = pair.sidebar_group || 'Altele';
 
   renderCharacteristics();
   document.getElementById('notes-view').innerHTML = pair.notes
@@ -39,6 +40,14 @@ async function loadPairDetail() {
 
   renderPairTradesTable();
   window.__afterTradeDelete = loadPairDetail;
+}
+
+async function updateSidebarGroup(value) {
+  const { error } = await supabaseClient.from('pairs').update({ sidebar_group: value }).eq('id', __pair.id);
+  if (error) { toast('Eroare: ' + error.message); return; }
+  __pair.sidebar_group = value;
+  toast('Grup actualizat');
+  renderSidebar('pairs');
 }
 
 function renderPairTradesTable() {
