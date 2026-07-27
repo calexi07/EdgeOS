@@ -20,6 +20,7 @@ async function loadPairDetail() {
   document.getElementById('characteristics-view').innerHTML = pair.characteristics
     ? DOMPurify.sanitize(marked.parse(pair.characteristics))
     : 'Nicio caracteristic\u0103 notat\u0103 \u00eenc\u0103.';
+  document.getElementById('characteristics-edit').value = pair.characteristics || '';
   document.getElementById('notes-view').innerHTML = pair.notes
     ? DOMPurify.sanitize(marked.parse(pair.notes))
     : 'Nicio notit\u0103 \u00eenc\u0103.';
@@ -85,15 +86,6 @@ async function loadFundamentalEntries() {
   renderFundamentalEntries();
 }
 
-function fundamentalPreviewText(content) {
-  const plain = (content || '')
-    .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/[#>*_`|-]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  return plain.length > 160 ? plain.slice(0, 160) + '…' : (plain || 'Fără conținut');
-}
-
 function toggleFundamentalEntry(id) {
   if (__expandedFundamentalIds.has(id)) {
     __expandedFundamentalIds.delete(id);
@@ -111,18 +103,22 @@ function renderFundamentalEntries() {
   }
   el.innerHTML = __fundamentalEntries.map(e => {
     const expanded = __expandedFundamentalIds.has(e.id);
+    const titleLabel = e.title && e.title.trim() ? e.title : 'F\u0103r\u0103 titlu';
     return `
-    <div class="entry-card">
+    <div class="entry-card" style="cursor:pointer;" onclick="toggleFundamentalEntry('${e.id}')">
       <div class="entry-card-head">
-        <span class="entry-date">${fmtDate(e.entry_date)}</span>
+        <div style="display:flex; align-items:baseline; gap:10px; min-width:0;">
+          <span class="entry-date">${fmtDate(e.entry_date)}</span>
+          <span style="font-weight:600; font-size:14px; ${expanded ? '' : 'overflow:hidden; text-overflow:ellipsis; white-space:nowrap;'}">${escapeHtml(titleLabel)}</span>
+        </div>
         <span class="entry-actions">
           <button onclick='event.stopPropagation(); openFundamentalEntryModal(${JSON.stringify(e).replace(/'/g, "&#39;")})'>Editeaz\u0103</button>
           <button onclick="event.stopPropagation(); deleteFundamentalEntry('${e.id}')">\u0218terge</button>
         </span>
       </div>
       ${expanded
-        ? `<div class="entry-content markdown-body" onclick="toggleFundamentalEntry('${e.id}')" style="cursor:pointer;" title="Click pentru a restr\u00e2nge">${DOMPurify.sanitize(marked.parse(e.content || ''))}</div>`
-        : `<div class="entry-preview" onclick="toggleFundamentalEntry('${e.id}')" title="Click pentru a vedea analiza complet\u0103">${escapeHtml(fundamentalPreviewText(e.content))}</div>`
+        ? `<div class="entry-content markdown-body">${DOMPurify.sanitize(marked.parse(e.content || ''))}</div>`
+        : ''
       }
     </div>
   `;
@@ -142,8 +138,16 @@ function openFundamentalEntryModal(entry) {
       <div class="modal" style="max-width:760px;">
         <h3 class="display" style="margin-top:0;">${entry ? 'Editeaz\u0103 analiz\u0103' : 'Analiz\u0103 nou\u0103'}</h3>
         <form id="fundamental-entry-form">
-          <label>Data</label>
-          <input name="entry_date" type="date" value="${entry ? entry.entry_date : new Date().toISOString().slice(0,10)}" style="margin-bottom:12px;">
+          <div style="display:grid; grid-template-columns:2fr 1fr; gap:12px; margin-bottom:12px;">
+            <div>
+              <label>Titlu (afi\u0219at ca preview)</label>
+              <input name="title" value="${entry?.title || ''}" placeholder="ex: USD Deep-Dive 27 Iul" required>
+            </div>
+            <div>
+              <label>Data</label>
+              <input name="entry_date" type="date" value="${entry ? entry.entry_date : new Date().toISOString().slice(0,10)}">
+            </div>
+          </div>
           <label>Con\u021binut</label>
           <textarea name="content" rows="18" required style="margin-bottom:16px; font-family: var(--font-mono); font-size:12px;">${entry ? entry.content : ''}</textarea>
           <div style="display:flex; gap:8px; justify-content:flex-end;">
@@ -160,6 +164,7 @@ function openFundamentalEntryModal(entry) {
     const payload = {
       pair_id: __pair.id,
       entry_date: fd.get('entry_date'),
+      title: fd.get('title'),
       content: fd.get('content'),
     };
     let error;
@@ -209,14 +214,23 @@ function toggleFieldEdit(field) {
   }
 }
 
+async function saveCharacteristics() {
+  const value = document.getElementById('characteristics-edit').value;
+  const { error } = await supabaseClient.from('pairs').update({ characteristics: value, updated_at: new Date().toISOString() }).eq('id', __pair.id);
+  if (error) { toast('Eroare: ' + error.message); return; }
+  __pair.characteristics = value;
+  document.getElementById('characteristics-view').innerHTML = value ? DOMPurify.sanitize(marked.parse(value)) : 'Nicio caracteristic\u0103 notat\u0103 \u00eenc\u0103.';
+  toast('Salvat');
+}
+
 function fieldKeyToViewId(field) {
-  return { fundamental_analysis: 'fundamental-view', characteristics: 'characteristics-view', notes: 'notes-view' }[field];
+  return { notes: 'notes-view' }[field];
 }
 function fieldKeyToEditId(field) {
-  return { fundamental_analysis: 'fundamental-edit', characteristics: 'characteristics-edit', notes: 'notes-edit' }[field];
+  return { notes: 'notes-edit' }[field];
 }
 function fieldKeyToSaveRowId(field) {
-  return { fundamental_analysis: 'fundamental-save-row', characteristics: 'characteristics-save-row', notes: 'notes-save-row' }[field];
+  return { notes: 'notes-save-row' }[field];
 }
 
 async function savePairField(field) {
