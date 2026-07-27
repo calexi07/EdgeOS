@@ -49,6 +49,7 @@ async function updateSidebarGroup(value) {
   __pair.sidebar_group = value;
   toast('Grup actualizat');
   renderSidebar('pairs');
+  loadFundamentalEntries();
 }
 
 function renderPairTradesTable() {
@@ -83,10 +84,12 @@ let __fundamentalEntries = [];
 let __expandedFundamentalIds = new Set();
 
 async function loadFundamentalEntries() {
+  const group = __pair.sidebar_group || 'Altele';
+  document.getElementById('fundamental-group-note').textContent = `Comun\u0103 pentru toate perechile din grupul ${group}.`;
   const { data } = await supabaseClient
-    .from('pair_fundamental_entries')
+    .from('group_fundamental_entries')
     .select('*')
-    .eq('pair_id', __pair.id)
+    .eq('group_code', group)
     .order('entry_date', { ascending: false })
     .order('created_at', { ascending: false });
   __fundamentalEntries = data || [];
@@ -169,7 +172,7 @@ function openFundamentalEntryModal(entry) {
     ev.preventDefault();
     const fd = new FormData(ev.target);
     const payload = {
-      pair_id: __pair.id,
+      group_code: __pair.sidebar_group || 'Altele',
       entry_date: fd.get('entry_date'),
       title: fd.get('title'),
       content: fd.get('content'),
@@ -177,9 +180,9 @@ function openFundamentalEntryModal(entry) {
     let error;
     if (entry) {
       payload.updated_at = new Date().toISOString();
-      ({ error } = await supabaseClient.from('pair_fundamental_entries').update(payload).eq('id', entry.id));
+      ({ error } = await supabaseClient.from('group_fundamental_entries').update(payload).eq('id', entry.id));
     } else {
-      ({ error } = await supabaseClient.from('pair_fundamental_entries').insert(payload));
+      ({ error } = await supabaseClient.from('group_fundamental_entries').insert(payload));
     }
     if (error) { toast('Eroare: ' + error.message); return; }
     document.getElementById('modal-root').innerHTML = '';
@@ -189,8 +192,8 @@ function openFundamentalEntryModal(entry) {
 }
 
 async function deleteFundamentalEntry(id) {
-  if (!confirm('Sigur \u0219tergi aceast\u0103 intrare din jurnalul de analiz\u0103?')) return;
-  const { error } = await supabaseClient.from('pair_fundamental_entries').delete().eq('id', id);
+  if (!confirm('Sigur \u0219tergi aceast\u0103 intrare din jurnalul de analiz\u0103? Se va \u0219terge din toate perechile din acest grup.')) return;
+  const { error } = await supabaseClient.from('group_fundamental_entries').delete().eq('id', id);
   if (error) { toast('Eroare: ' + error.message); return; }
   toast('\u0218ters');
   loadFundamentalEntries();
