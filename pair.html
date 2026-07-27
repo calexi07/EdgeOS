@@ -48,6 +48,7 @@
 
     <div class="tabs">
       <div class="tab active" data-tab="journal" onclick="switchPairTab('journal')">Jurnal</div>
+      <div class="tab" data-tab="setups" onclick="switchPairTab('setups')">Setups</div>
       <div class="tab" data-tab="fundamental" onclick="switchPairTab('fundamental')">Analiză fundamentală</div>
       <div class="tab" data-tab="characteristics" onclick="switchPairTab('characteristics')">Caracteristici</div>
       <div class="tab" data-tab="notes" onclick="switchPairTab('notes')">Notite</div>
@@ -55,6 +56,14 @@
 
     <div class="card" id="tab-journal">
       <div id="pair-trades-table"></div>
+    </div>
+
+    <div class="card" id="tab-setups" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 class="display" style="font-size:15px; margin:0;">Setups pe această pereche</h3>
+        <button class="btn" onclick="openNewSetupModal({lockPairId: __pair.id})">+ Setup nou</button>
+      </div>
+      <div id="pair-setups-list"></div>
     </div>
 
     <div class="card" id="tab-fundamental" style="display:none;">
@@ -92,6 +101,7 @@
 <script src="js/config.js"></script>
 <script src="js/common.js"></script>
 <script src="js/trade-modal.js"></script>
+<script src="js/setups.js"></script>
 <script src="js/pair-detail.js"></script>
 <script>
   renderSidebar('pairs');
