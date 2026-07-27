@@ -17,8 +17,12 @@ async function loadPairDetail() {
   document.getElementById('pair-symbol-crumb').textContent = pair.symbol;
   document.getElementById('pair-display-name').textContent = pair.display_name || '';
 
-  document.getElementById('characteristics-view').textContent = pair.characteristics || 'Nicio caracteristic\u0103 notat\u0103 \u00eenc\u0103.';
-  document.getElementById('notes-view').textContent = pair.notes || 'Nicio notit\u0103 \u00eenc\u0103.';
+  document.getElementById('characteristics-view').innerHTML = pair.characteristics
+    ? DOMPurify.sanitize(marked.parse(pair.characteristics))
+    : 'Nicio caracteristic\u0103 notat\u0103 \u00eenc\u0103.';
+  document.getElementById('notes-view').innerHTML = pair.notes
+    ? DOMPurify.sanitize(marked.parse(pair.notes))
+    : 'Nicio notit\u0103 \u00eenc\u0103.';
 
   await loadFundamentalEntries();
 
@@ -221,7 +225,7 @@ async function savePairField(field) {
   const { error } = await supabaseClient.from('pairs').update({ [field]: value, updated_at: new Date().toISOString() }).eq('id', __pair.id);
   if (error) { toast('Eroare: ' + error.message); return; }
   __pair[field] = value;
-  document.getElementById(fieldKeyToViewId(field)).textContent = value || '—';
+  document.getElementById(fieldKeyToViewId(field)).innerHTML = value ? DOMPurify.sanitize(marked.parse(value)) : '—';
   toggleFieldEdit(field);
   toast('Salvat');
 }
