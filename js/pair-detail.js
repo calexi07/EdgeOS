@@ -24,6 +24,7 @@ async function loadPairDetail() {
     : 'Nicio notit\u0103 \u00eenc\u0103.';
 
   await loadFundamentalEntries();
+  await loadPairSetups();
 
   const { data: trades } = await supabaseClient
     .from('trades')
@@ -195,9 +196,28 @@ async function deleteFundamentalEntry(id) {
   loadFundamentalEntries();
 }
 
+// ---------------------------------------------------------------
+// Setups for this pair only (reuses card rendering from js/setups.js)
+// ---------------------------------------------------------------
+async function loadPairSetups() {
+  const { data } = await supabaseClient
+    .from('pair_setups')
+    .select('*')
+    .eq('pair_id', __pair.id)
+    .order('created_at', { ascending: false });
+  const setups = data || [];
+  const el = document.getElementById('pair-setups-list');
+  if (!setups.length) {
+    el.innerHTML = `<div class="empty-state"><div class="display">Niciun setup \u00eenc\u0103 pe aceast\u0103 pereche</div>Apas\u0103 "+ Setup nou" pentru primul.</div>`;
+  } else {
+    el.innerHTML = setups.map(s => renderSetupCard(s, { hidePairName: true })).join('');
+  }
+  window.__afterSetupChange = loadPairSetups;
+}
+
 function switchPairTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  ['journal', 'fundamental', 'characteristics', 'notes'].forEach(t => {
+  ['journal', 'setups', 'fundamental', 'characteristics', 'notes'].forEach(t => {
     document.getElementById('tab-' + t).style.display = t === tab ? '' : 'none';
   });
 }
