@@ -95,7 +95,7 @@ function renderFundamentalEntries() {
           <button onclick="deleteFundamentalEntry('${e.id}')">\u0218terge</button>
         </span>
       </div>
-      <div class="entry-content">${escapeHtml(e.content)}</div>
+      <div class="entry-content markdown-body">${DOMPurify.sanitize(marked.parse(e.content || ''))}</div>
     </div>
   `).join('');
 }
@@ -110,13 +110,13 @@ function openFundamentalEntryModal(entry) {
   const root = document.getElementById('modal-root');
   root.innerHTML = `
     <div class="modal-backdrop" onclick="if(event.target===this) this.remove()">
-      <div class="modal" style="max-width:560px;">
+      <div class="modal" style="max-width:760px;">
         <h3 class="display" style="margin-top:0;">${entry ? 'Editeaz\u0103 analiz\u0103' : 'Analiz\u0103 nou\u0103'}</h3>
         <form id="fundamental-entry-form">
           <label>Data</label>
           <input name="entry_date" type="date" value="${entry ? entry.entry_date : new Date().toISOString().slice(0,10)}" style="margin-bottom:12px;">
           <label>Con\u021binut</label>
-          <textarea name="content" rows="8" required style="margin-bottom:16px;">${entry ? entry.content : ''}</textarea>
+          <textarea name="content" rows="18" required style="margin-bottom:16px; font-family: var(--font-mono); font-size:12px;">${entry ? entry.content : ''}</textarea>
           <div style="display:flex; gap:8px; justify-content:flex-end;">
             <button type="button" class="btn secondary" onclick="document.getElementById('modal-root').innerHTML=''">Anuleaz\u0103</button>
             <button type="submit" class="btn">Salveaz\u0103</button>
