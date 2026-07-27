@@ -267,3 +267,56 @@ tr:hover td { background: var(--panel-raised); }
 }
 .entry-actions button:hover { color: var(--text); }
 .entry-content { white-space: pre-wrap; line-height: 1.6; font-size: 13px; }
+
+/* Setups page */
+.setup-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.setup-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.setup-tf-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+@media (max-width: 760px) { .setup-tf-grid { grid-template-columns: 1fr; } }
+.setup-tf-block {
+  background: var(--panel-raised);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+.setup-tf-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.setup-tf-notes { font-size: 13px; white-space: pre-wrap; line-height: 1.5; margin-bottom: 8px; min-height: 20px; }
+.setup-tf-link { font-size: 12px; color: var(--teal); text-decoration: none; }
+.setup-tf-link:hover { text-decoration: underline; }
+.confluence-row { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 14px; }
+.confluence-col { flex: 1; min-width: 200px; }
+.confluence-col-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 6px; }
+.confluence-tag {
+  display: inline-block;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin: 0 6px 6px 0;
+}
+.confluence-tag.pro { background: rgba(31,191,117,0.12); color: var(--win); }
+.confluence-tag.against { background: rgba(230,72,79,0.12); color: var(--loss); }
+.setup-actions { display: flex; gap: 8px; }
