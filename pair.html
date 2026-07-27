@@ -52,14 +52,12 @@
     </div>
 
     <div class="card" id="tab-characteristics" style="display:none;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h3 class="display" style="font-size:15px; margin:0;">Caracteristici pereche</h3>
-        <button class="btn secondary" onclick="toggleFieldEdit('characteristics')">Editează</button>
-      </div>
-      <div id="characteristics-view" class="markdown-body"></div>
-      <textarea id="characteristics-edit" style="display:none; min-height:220px;"></textarea>
-      <div id="characteristics-save-row" style="display:none; margin-top:12px; text-align:right;">
-        <button class="btn" onclick="savePairField('characteristics')">Salvează</button>
+      <h3 class="display" style="font-size:15px; margin:0 0 14px;">Caracteristici pereche</h3>
+      <div id="characteristics-view" class="markdown-body" style="margin-bottom:18px;"></div>
+      <label>Editeaz\u0103 (Markdown)</label>
+      <textarea id="characteristics-edit" style="min-height:260px;"></textarea>
+      <div style="margin-top:12px; text-align:right;">
+        <button class="btn" onclick="saveCharacteristics()">Salveaz\u0103</button>
       </div>
     </div>
 
